@@ -5,10 +5,11 @@ import io.quarkus.websockets.next.OnOpen
 import io.quarkus.websockets.next.OnTextMessage
 import io.quarkus.websockets.next.WebSocket
 import io.quarkus.websockets.next.WebSocketConnection
-import jakarta.inject.Inject
 
 @WebSocket(path = "/chat/{username}")
-class ChatWebSocket {
+class ChatWebSocket(
+    val connection: WebSocketConnection,
+) {
     // Declare the type of messages that can be sent and received
     enum class MessageType {
         USER_JOINED, USER_LEFT, CHAT_MESSAGE
@@ -16,9 +17,6 @@ class ChatWebSocket {
 
     @JvmRecord
     data class ChatMessage(val type: MessageType, val from: String, val message: String?)
-
-    @Inject
-    var connection: WebSocketConnection? = null
 
     @OnOpen(broadcast = true)
     fun onOpen(): ChatMessage {
